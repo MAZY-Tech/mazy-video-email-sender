@@ -10,7 +10,6 @@ from email import encoders
 from pathlib import Path
 import jinja2
 
-# --- Configurações ---
 load_dotenv()
 SMTP_SERVER = os.getenv("SMTP_SERVER")
 SMTP_PORT = int(os.getenv("SMTP_PORT"))
@@ -18,11 +17,9 @@ SMTP_USER = os.getenv("SMTP_USER")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 EMAIL_FROM = os.getenv("EMAIL_FROM")
 
-# Configura Jinja2
 template_loader = jinja2.FileSystemLoader(searchpath="./app/templates")
 template_env = jinja2.Environment(loader=template_loader)
 
-# Cria um cliente S3
 s3_client = boto3.client('s3', region_name=os.getenv("AWS_REGION"))
 
 def get_user_by_id(user_id: str):
