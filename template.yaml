@@ -1,0 +1,109 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM template for MAZY Video Tools Notification Lambda function triggered by SQS.
+
+Globals:
+  Function:
+    Timeout: 15
+    Runtime: python3.12
+    MemorySize: 128
+    EphemeralStorage:
+      Size: 512
+
+Parameters:
+  VpcSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: VPC subnet IDs for Lambda functions
+  VpcSecurityGroups:
+    Type: List<AWS::EC2::SecurityGroup::Id>
+    Description: VPC security group IDs for Lambda functions
+
+  SMTPServer:
+    Type: String
+    Description: SMTP server endpoint (e.g. “smtp.example.com”)
+  SMTPPort:
+    Type: Number
+    Default: 587
+    Description: SMTP server port
+  SMTPUser:
+    Type: String
+    Description: SMTP username
+  SMTPPassword:
+    Type: String
+    Description: SMTP password
+  EmailFrom:
+    Type: String
+    Description: “From” address for outgoing emails
+  TemplateDir:
+    Type: String
+    Default: "./templates"
+    Description: Path inside the bundle to your Jinja2 templates
+  SignedUrlExpiration:
+    Type: Number
+    Default: 3600
+    Description: Seconds until the presigned URL expires
+  CognitoUserPoolId:
+    Type: String
+    Description: ID of the Cognito User Pool
+
+Resources:
+
+  VideoToolsNotificationQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: mazy-video-tools-notification
+
+  NotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: mazy-video-tools-notification
+      Description: Process notifications to send e-mail.
+      CodeUri: src/
+      Handler: lambda_function.lambda_handler
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/LabRole
+      VpcConfig:
+        SubnetIds: !Ref VpcSubnets
+        SecurityGroupIds: !Ref VpcSecurityGroups
+      Environment:
+        Variables:
+          SMTP_SERVER: !Ref SMTPServer
+          SMTP_PORT: !Ref SMTPPort
+          SMTP_USER: !Ref SMTPUser
+          SMTP_PASSWORD: !Ref SMTPPassword
+          EMAIL_FROM: !Ref EmailFrom
+          TEMPLATE_DIR: !Ref TemplateDir
+          SIGNED_URL_EXPIRATION: !Ref SignedUrlExpiration
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      - Statement:
+          Effect: Allow
+          Action:
+          - s3:GetObject
+          Resource: !Sub arn:aws:s3:::${S3Bucket}/*
+      - Statement:
+          Effect: Allow
+          Action:
+          - sqs:ReceiveMessage
+          - sqs:DeleteMessage
+          - sqs:GetQueueAttributes
+          Resource: !Ref VideoToolsNotificationQueue.Arn
+      - Statement:
+        - Effect: Allow
+          Action:
+          - cognito-idp:AdminGetUser
+          Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
+      Events:
+        VideoToolsQueueEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt VideoToolsNotificationQueue.Arn
+
+Outputs:
+  NotificationFunctionArn:
+    Description: ARN of the notification Lambda function
+    Value: !GetAtt NotificationFunction.Arn
+
+  NotificationQueueUrl:
+    Description: URL of the SQS queue
+    Value: !Ref VideoToolsNotificationQueue
