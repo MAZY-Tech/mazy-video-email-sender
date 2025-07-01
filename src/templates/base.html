@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Video Status</title>
+</head>
+<body>
+    <h2>Hello, {{ name }}!</h2>
+
+    <p>Your video processing status is <strong>{{ status }}</strong>.</p>
+
+    {% if status == "COMPLETED" and download_url %}
+    <p>
+        You can download your video file by clicking
+        <a href="{{ download_url }}">here</a>.
+    </p>
+    {% elif status == "FAILED" and error_message %}
+    <p>
+        {{ error_message }}
+    </p>
+    {% endif %}
+
+    <p>
+        Best regards,<br>
+        MAZY Video Tools
+    </p>
+</body>
+</html>
