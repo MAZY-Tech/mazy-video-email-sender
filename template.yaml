@@ -18,6 +18,24 @@ Parameters:
     Type: List<AWS::EC2::SecurityGroup::Id>
     Description: VPC security group IDs for Lambda functions
 
+  DatabaseHost:
+    Type: String
+    Default: localhost
+    Description: MongoDB host
+  DatabaseUser:
+    Type: String
+    Default: root
+    Description: MongoDB username
+  DatabasePassword:
+    Type: String
+    Default: password
+    Description: MongoDB password
+    NoEcho: true
+  DatabaseName:
+    Type: String
+    Default: testdb
+    Description: MongoDB database name
+
   SMTPServer:
     Type: String
     Description: SMTP server endpoint (e.g. “smtp.example.com”)
@@ -38,20 +56,29 @@ Parameters:
     Type: String
     Default: "./templates"
     Description: Path inside the bundle to your Jinja2 templates
-  SignedUrlExpiration:
-    Type: Number
-    Default: 3600
-    Description: Seconds until the presigned URL expires
+
   CognitoUserPoolId:
     Type: String
     Description: ID of the Cognito User Pool
+  FrontendVideoUrl:
+    Type: String
+    Description: Frontend URL for video details
 
 Resources:
+  NotificationDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: mazy-video-tools-progress-updates-dlq
+      MessageRetentionPeriod: 1209600
 
-  VideoToolsNotificationQueue:
+  NotificationQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: mazy-video-tools-notification
+      VisibilityTimeout: 60
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt NotificationDeadLetterQueue.Arn
+        maxReceiveCount: 5
 
   NotificationFunction:
     Type: AWS::Serverless::Function
@@ -66,14 +93,18 @@ Resources:
         SecurityGroupIds: !Ref VpcSecurityGroups
       Environment:
         Variables:
+          DATABASE_HOST: !Ref DatabaseHost
+          DATABASE_USER: !Ref DatabaseUser
+          DATABASE_PASSWORD: !Ref DatabasePassword
+          DATABASE_NAME: !Ref DatabaseName
           SMTP_SERVER: !Ref SMTPServer
           SMTP_PORT: !Ref SMTPPort
           SMTP_USER: !Ref SMTPUser
           SMTP_PASSWORD: !Ref SMTPPassword
           EMAIL_FROM: !Ref EmailFrom
           TEMPLATE_DIR: !Ref TemplateDir
-          SIGNED_URL_EXPIRATION: !Ref SignedUrlExpiration
           COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+          FRONTEND_VIDEO_URL: !Ref FrontendVideoUrl
       Policies:
       - AWSLambdaBasicExecutionRole
       - Statement:
@@ -87,7 +118,7 @@ Resources:
           - sqs:ReceiveMessage
           - sqs:DeleteMessage
           - sqs:GetQueueAttributes
-          Resource: !Ref VideoToolsNotificationQueue.Arn
+          Resource: !Ref NotificationQueue.Arn
       - Statement:
         - Effect: Allow
           Action:
@@ -97,7 +128,7 @@ Resources:
         VideoToolsQueueEvent:
           Type: SQS
           Properties:
-            Queue: !GetAtt VideoToolsNotificationQueue.Arn
+            Queue: !GetAtt NotificationQueue.Arn
 
 Outputs:
   NotificationFunctionArn:
@@ -106,4 +137,4 @@ Outputs:
 
   NotificationQueueUrl:
     Description: URL of the SQS queue
-    Value: !Ref VideoToolsNotificationQueue
+    Value: !Ref NotificationQueue

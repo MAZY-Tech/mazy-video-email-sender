@@ -7,16 +7,19 @@
 <body>
     <h2>Hello, {{ name }}!</h2>
 
-    <p>Your video processing status is <strong>{{ status }}</strong>.</p>
+    <p>Your video <b>{{ file_name }}</b> processing status is <strong>{{ status }}</strong>.</p>
 
-    {% if status == "COMPLETED" and download_url %}
+    {% if status == "COMPLETED" and video_url %}
     <p>
         You can download your video file by clicking
-        <a href="{{ download_url }}">here</a>.
+        <a href="{{ video_url }}">here</a>.
     </p>
     {% elif status == "FAILED" and error_message %}
     <p>
         {{ error_message }}
+        <br>
+        Details
+        <a href="{{ video_url }}">here</a>.
     </p>
     {% endif %}
 

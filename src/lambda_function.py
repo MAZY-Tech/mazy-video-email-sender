@@ -1,9 +1,8 @@
 import json
-from config import logger
-from s3_utils import generate_presigned_url
+from config import logger, FRONTEND_VIDEO_URL
 from cognito_utils import get_user_info
 from email_sender import send_notification_email
-from history.add_history import add_notification_history
+from history import add_notification_history
 
 def lambda_handler(event, context):
     for record in event.get("Records", []):
@@ -11,23 +10,23 @@ def lambda_handler(event, context):
         logger.info(f"Processing message ID: {message_id}")
         try:
             body = json.loads(record["body"])
-            cognito_user_id = body["cognito_user_id"]
             video_id = body["video_id"]
+            file_name = body["file_name"]
+
+            cognito_user_id = body["cognito_user_id"]            
             user_info = get_user_info(cognito_user_id)
             recipient_email = user_info["email"]
             recipient_name = user_info["name"]
+
             status = body["status"].upper()
-            download_url = None
+            video_url = f'{FRONTEND_VIDEO_URL}/{video_id}'
             error_message = None
 
-            if status == "COMPLETED":
-                bucket_name = body["bucket"]
-                key = body["key"]
-                download_url = generate_presigned_url(bucket_name, key)
-            elif status == "FAILED":
+            if status == "FAILED":
                 error_message = body.get("message")
 
-            send_notification_email(recipient_email, recipient_name, status, download_url, error_message)
+            send_notification_email(recipient_email, recipient_name, file_name, status, video_url, error_message)
+            
             add_notification_history(
                 cognito_user_id=cognito_user_id,
                 recipient_email=recipient_email,
