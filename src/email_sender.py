@@ -5,14 +5,22 @@ import jinja2
 
 from config import SMTP_SERVER, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, EMAIL_FROM, TEMPLATE_DIR, logger
 
-def send_notification_email(recipient_email: str, recipient_name: str, status: str, download_url: str = None, error_message: str = None):
+def send_notification_email(
+    recipient_email: str,
+    recipient_name: str,
+    file_name: str,
+    status: str,
+    video_url: str = None,
+    error_message: str = None
+):
     template_loader = jinja2.FileSystemLoader(searchpath=TEMPLATE_DIR)
     template_env = jinja2.Environment(loader=template_loader)
     template = template_env.get_template("base.html")
     html_body = template.render(
         name=recipient_name,
+        file_name=file_name,
         status=status,
-        download_url=download_url,
+        video_url=video_url,
         error_message=error_message
     )
 
