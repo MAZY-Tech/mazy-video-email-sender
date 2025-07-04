@@ -1,7 +1,7 @@
 import json
 from dotenv import load_dotenv
 
-from lambda_function import lambda_handler
+from src.lambda_function import lambda_handler
 
 print("--- Iniciando teste local da função Lambda ---")
 load_dotenv(dotenv_path='.env.local')
@@ -14,10 +14,11 @@ mock_sqs_event = {
             "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
             "receiptHandle": "MessageReceiptHandle",
             "body": json.dumps({
-                "recipient_email": "taykarus@gmail.com",#remover por id para testes quando rota de get_user for implementada
-                "recipient_name": "Usuário de Teste Local",#remover por id para testes quando rota de get_user for implementada
-                "s3_bucket": "bucket-fera-s3",
-                "s3_key": ".zip" 
+                "video_id": "298ce197-3627-4845-83d7-cd6c98a9df8c",
+                "cognito_user_id": "a4681438-70b1-70cb-308f-cc40ea50066a",
+                "status": "COMPLETED",
+                "message": "",
+                "timestamp": "2025-06-19T19:46:37+00:00"
             }),
             "attributes": {
                 "ApproximateReceiveCount": "1",
