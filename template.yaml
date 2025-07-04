@@ -68,7 +68,7 @@ Resources:
   NotificationDeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: mazy-video-tools-progress-updates-dlq
+      QueueName: mazy-video-tools-notification-dlq
       MessageRetentionPeriod: 1209600
 
   NotificationQueue:
