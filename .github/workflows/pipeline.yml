@@ -61,4 +61,5 @@ jobs:
             EmailFrom='${{ vars.EMAIL_FROM }}' \
             TemplateDir='${{ vars.TEMPLATE_DIR }}' \
             CognitoUserPoolId='${{ vars.COGNITO_USER_POOL_ID }}' \
-            FrontendVideoUrl='${{ vars.FRONTEND_VIDEO_URL }}'
+            FrontendVideoUrl='${{ vars.FRONTEND_VIDEO_URL }}' \
+            SentryDSN='${{ secrets.SENTRY_DSN }}'
