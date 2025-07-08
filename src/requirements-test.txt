@@ -1,0 +1,6 @@
+pytest
+pytest-mock
+moto[dynamodb,s3,cognito-idp]
+boto3
+botocore
+pymongo[srv]

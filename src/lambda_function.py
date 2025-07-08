@@ -1,4 +1,8 @@
 import json
+from .config import logger, FRONTEND_VIDEO_URL
+from .cognito_utils import get_user_info
+from .email_sender import send_notification_email
+from .history import add_notification_history
 from config import logger, FRONTEND_VIDEO_URL
 from cognito_utils import get_user_info
 from email_sender import send_notification_email
@@ -22,19 +26,20 @@ def lambda_handler(event, context):
             recipient_name = user_info["name"]
 
             status = body["status"].upper()
-            video_url = f'{FRONTEND_VIDEO_URL}/{video_id}'
-            error_message = None
+            if status == "SUCCESS":
+                video_url = f'{FRONTEND_VIDEO_URL}/{video_id}'
+                send_notification_email(recipient_email, recipient_name, file_name, status, video_url, None)
 
-            if status == "FAILED":
+                add_notification_history(
+                    cognito_user_id=cognito_user_id,
+                    recipient_email=recipient_email,
+                    video_id=video_id
+                )
+                
+            elif status == "FAILED":
                 error_message = body.get("message")
-
-            send_notification_email(recipient_email, recipient_name, file_name, status, video_url, error_message)
-            
-            add_notification_history(
-                cognito_user_id=cognito_user_id,
-                recipient_email=recipient_email,
-                video_id=video_id
-            )
+                send_notification_email(recipient_email, recipient_name, file_name, status, None, error_message)
+                
             logger.info("Notification sent successfully")
         except Exception as e:
             logger.error(f"Error processing message {message_id}: {e}")
