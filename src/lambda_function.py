@@ -3,6 +3,13 @@ from .config import logger, FRONTEND_VIDEO_URL
 from .cognito_utils import get_user_info
 from .email_sender import send_notification_email
 from .history import add_notification_history
+from config import logger, FRONTEND_VIDEO_URL
+from cognito_utils import get_user_info
+from email_sender import send_notification_email
+from history import add_notification_history
+from sentry import initialize_sentry
+
+initialize_sentry()
 
 def lambda_handler(event, context):
     for record in event.get("Records", []):
