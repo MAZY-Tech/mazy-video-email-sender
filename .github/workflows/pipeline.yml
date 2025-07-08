@@ -62,4 +62,4 @@ jobs:
             TemplateDir='${{ vars.TEMPLATE_DIR }}' \
             CognitoUserPoolId='${{ vars.COGNITO_USER_POOL_ID }}' \
             FrontendVideoUrl='${{ vars.FRONTEND_VIDEO_URL }}' \
-            SentryDsn='${{ vars.SENTRY_DSN }}'
+            SentryDsn='${{ secrets.SENTRY_DSN }}'
