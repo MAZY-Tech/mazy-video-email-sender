@@ -1,5 +1,5 @@
-from aws_clients import cognito_client
-from config import COGNITO_USER_POOL_ID
+from .aws_clients import cognito_client
+from .config import COGNITO_USER_POOL_ID
 
 def get_user_info(cognito_user_id: str) -> dict:
     response = cognito_client.admin_get_user(
