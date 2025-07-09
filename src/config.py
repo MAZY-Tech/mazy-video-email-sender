@@ -4,10 +4,10 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-DATABASE_HOST = os.environ['DATABASE_HOST']
-DATABASE_USER = os.environ['DATABASE_USER']
-DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
-DATABASE_NAME = os.environ['DATABASE_NAME']
+DATABASE_HOST = os.getenv('DATABASE_HOST')
+DATABASE_USER = os.getenv('DATABASE_USER')
+DATABASE_PASSWORD = os.getenv('DATABASE_PASSWORD')
+DATABASE_NAME = os.getenv('DATABASE_NAME')
 
 SMTP_SERVER = os.getenv("SMTP_SERVER")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))

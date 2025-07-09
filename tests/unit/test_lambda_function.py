@@ -1,9 +1,9 @@
-import pytest
+import json
 import json
 from unittest.mock import MagicMock
 
-from src.lambda_function import lambda_handler
-from src.config import FRONTEND_VIDEO_URL
+from lambda_function import lambda_handler
+from config import FRONTEND_VIDEO_URL
 
 
 FAKE_COGNITO_USER_ID = "fake_cognito_id"
@@ -32,10 +32,10 @@ def create_sqs_event(status, error_message=None):
 
 def test_lambda_handler_success(mocker):
     mock_collection = MagicMock()
-    mocker.patch("src.history.get_collection", return_value=mock_collection)
-    mock_get_user = mocker.patch("src.lambda_function.get_user_info", return_value=FAKE_USER_INFO)
-    mock_send_email = mocker.patch("src.lambda_function.send_notification_email")
-    mock_logger_info = mocker.patch("src.lambda_function.logger.info")
+    mocker.patch("history.get_collection", return_value=mock_collection)
+    mock_get_user = mocker.patch("lambda_function.get_user_info", return_value=FAKE_USER_INFO)
+    mock_send_email = mocker.patch("lambda_function.send_notification_email")
+    mock_logger_info = mocker.patch("lambda_function.logger.info")
 
     success_event = create_sqs_event("COMPLETED")
     response = lambda_handler(success_event, None)

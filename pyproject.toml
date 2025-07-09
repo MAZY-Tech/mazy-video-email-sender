@@ -1,4 +1,6 @@
-[tool.pytest.ini_options]
-pythonpath = [
-  "."
-]
+[project]
+name = "mazy-video-tools-notification"
+version = "1.0.0"
+
+[tool.setuptools.packages.find]
+where = ["src"]
