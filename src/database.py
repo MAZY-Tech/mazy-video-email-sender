@@ -1,6 +1,6 @@
 import urllib.parse
 from pymongo import MongoClient
-from .config import DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_NAME
+from config import DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_NAME
 
 _client = None
 

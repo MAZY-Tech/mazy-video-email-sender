@@ -1,5 +1,5 @@
-from .config import SIGNED_URL_EXPIRATION
-from .aws_clients import s3_client
+from config import SIGNED_URL_EXPIRATION
+from aws_clients import s3_client
 
 def generate_presigned_url(bucket_name: str, key: str, expiration: int = None) -> str:
     expiration = expiration or SIGNED_URL_EXPIRATION
