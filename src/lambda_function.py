@@ -22,7 +22,7 @@ def lambda_handler(event, context):
             recipient_name = user_info["name"]
 
             status = body["status"].upper()
-            if status == "SUCCESS":
+            if status == "COMPLETED":
                 video_url = f'{FRONTEND_VIDEO_URL}/{video_id}'
                 send_notification_email(recipient_email, recipient_name, file_name, status, video_url, None)
 

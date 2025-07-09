@@ -37,7 +37,7 @@ def test_lambda_handler_success(mocker):
     mock_send_email = mocker.patch("src.lambda_function.send_notification_email")
     mock_logger_info = mocker.patch("src.lambda_function.logger.info")
 
-    success_event = create_sqs_event("SUCCESS")
+    success_event = create_sqs_event("COMPLETED")
     response = lambda_handler(success_event, None)
 
     assert response["statusCode"] == 200
@@ -47,7 +47,7 @@ def test_lambda_handler_success(mocker):
         "test@example.com", 
         "Test User",
         FAKE_FILE_NAME,
-        "SUCCESS",
+        "COMPLETED",
         f"{FRONTEND_VIDEO_URL}/{FAKE_VIDEO_ID}", 
         None
     )
