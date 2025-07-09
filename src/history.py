@@ -1,6 +1,5 @@
-from .config import logger
-# from .database import collection
-from .database import collection as get_collection
+from config import logger
+from database import collection as get_collection
 from datetime import datetime, timezone
 
 def add_notification_history(cognito_user_id: str, recipient_email: str, video_id: str = None):
