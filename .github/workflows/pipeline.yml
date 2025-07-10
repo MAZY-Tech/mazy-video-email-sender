@@ -27,7 +27,7 @@ jobs:
       run: pip install -r src/requirements-test.txt
 
     - name: Install Project Package
-      run: pip install .
+      run: pip install -e .
 
     - name: Test and Generate coverage report
       run: pytest --cov=src --cov-report=xml:coverage.xml
