@@ -29,14 +29,8 @@ jobs:
     - name: Install Project Package
       run: pip install -e .
 
-    - name: Run Tests
-      run: pytest --cov-report=term-missing
-
-    - name: Install tox and any other packages
-      run: pip install tox
-
-    - name: Run tox
-      run: tox -e py
+    - name: Test and Generate coverage report
+      run: pytest --cov-report=term-missing --cov-report=xml:coverage.xml
 
     - name: SonarQube Scan
       uses: sonarsource/sonarqube-scan-action@v2
