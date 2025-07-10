@@ -17,6 +17,8 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Set up Python 3.12
       uses: actions/setup-python@v5
@@ -39,7 +41,7 @@ jobs:
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       with:
         args: >
-          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} -Dsonar.projectName=${{ vars.SONAR_PROJECT_NAME }} -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }} -Dsonar.sources=src -Dsonar.tests=tests -Dsonar.python.coverage.reportPaths=coverage.xml
+          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}  -Dsonar.projectName=${{ vars.SONAR_PROJECT_NAME }}  -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}  -Dsonar.sources=. -sonar.inclusions=src/** -Dsonar.tests=tests  -Dsonar.python.version=3.12 -Dsonar.python.coverage.reportPaths=coverage.xml
 
     - name: Wait and Enforce Quality Gate
       uses: sonarsource/sonarqube-quality-gate-action@master
