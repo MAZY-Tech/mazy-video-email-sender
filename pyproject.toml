@@ -1,4 +1,9 @@
+[project]
+name = "mazy-video-tools-notification"
+version = "1.0.0"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.pytest.ini_options]
-pythonpath = [
-  "."
-]
+addopts = "--cov=src --cov-report=term-missing"

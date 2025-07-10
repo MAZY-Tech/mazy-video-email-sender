@@ -11,9 +11,52 @@ on:
 
 
 jobs:
+  test-sonar:
+    name: Run Tests & Sonar
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install Dependencies
+      run: pip install -r src/requirements-test.txt
+
+    - name: Install Project Package
+      run: pip install -e .
+
+    - name: Test and Generate coverage report
+      run: pytest --cov=src --cov-report=xml:coverage.xml
+
+    - name: SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@v2
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      with:
+        args: >
+          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+          -Dsonar.projectName=${{ vars.SONAR_PROJECT_NAME }}
+          -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+          -Dsonar.sources=src
+          -Dsonar.tests=tests
+          -Dsonar.python.coverage.reportPaths=coverage.xml
+
+    - name: Wait and Enforce Quality Gate
+      uses: sonarsource/sonarqube-quality-gate-action@master
+      timeout-minutes: 5
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
   build-and-deploy:
     name: Build and Deploy SAM Application
     runs-on: ubuntu-latest
+    needs: test-sonar
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4

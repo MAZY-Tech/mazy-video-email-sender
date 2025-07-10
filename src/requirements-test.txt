@@ -1,6 +1,8 @@
-pytest
-pytest-mock
-moto[dynamodb,s3,cognito-idp]
 boto3
 botocore
+moto[dynamodb,s3,cognito-idp]
 pymongo[srv]
+pytest
+pytest-mock
+pytest-cov
+sentry-sdk
