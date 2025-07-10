@@ -29,11 +29,8 @@ jobs:
     - name: Install Project Package
       run: pip install -e .
 
-    - name: Run Tests
-      run: pytest --cov-report=term-missing
-
-    - name: Generate Coverage Report
-      run: coverage xml -i
+    - name: Test and Generate coverage report
+      run: pytest --cov-report=term-missing --cov-report=xml:.coverage-reports/coverage.xml
 
     - name: SonarQube Scan
       uses: sonarsource/sonarqube-scan-action@v2
@@ -42,7 +39,7 @@ jobs:
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       with:
         args: >
-          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} -Dsonar.projectName=${{ vars.SONAR_PROJECT_NAME }} -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }} -Dsonar.sources=src -Dsonar.tests=tests -Dsonar.python.coverage.reportPaths=coverage.xml
+          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} -Dsonar.projectName=${{ vars.SONAR_PROJECT_NAME }} -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }} -Dsonar.sources=src -Dsonar.tests=tests
 
     - name: Wait and Enforce Quality Gate
       uses: sonarsource/sonarqube-quality-gate-action@master
