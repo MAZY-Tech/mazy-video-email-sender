@@ -1,0 +1,10 @@
+[run]
+source = src
+
+[report]
+show_missing = True
+
+[paths]
+source =
+    src
+    */src
