@@ -35,13 +35,13 @@ jobs:
       run: pytest --cov-report=term-missing --cov-report=xml:coverage.xml
 
     - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@v2
+      uses: sonarsource/sonarqube-scan-action@v3
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       with:
         args: >
-          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}  -Dsonar.projectName=${{ vars.SONAR_PROJECT_NAME }}  -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}  -Dsonar.sources=. -Dsonar.inclusions=src/** -Dsonar.tests=tests  -Dsonar.python.version=3.12 -Dsonar.python.coverage.reportPaths=coverage.xml
+          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}  -Dsonar.projectName=${{ vars.SONAR_PROJECT_NAME }}  -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}  -Dsonar.sources=src -Dsonar.inclusions=src/** -Dsonar.tests=tests  -Dsonar.python.version=3.12 -Dsonar.python.coverage.reportPaths=coverage.xml
 
     - name: Wait and Enforce Quality Gate
       uses: sonarsource/sonarqube-quality-gate-action@master

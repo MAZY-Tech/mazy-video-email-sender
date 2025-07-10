@@ -1,0 +1,7 @@
+[paths]
+source =
+    src
+    */site-packages
+
+[run]
+source = src
