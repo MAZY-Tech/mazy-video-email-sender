@@ -48,7 +48,7 @@ jobs:
         SONAR_PROJECT_NAME: ${{ vars.SONAR_PROJECT_NAME }}
         SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
       run: |
-        pysonar scan \
+        pysonar \
           --project-key "$SONAR_PROJECT_KEY" \
           --project-name "$SONAR_PROJECT_NAME" \
           --organization "$SONAR_ORGANIZATION" \
