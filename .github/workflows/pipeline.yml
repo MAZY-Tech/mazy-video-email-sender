@@ -31,28 +31,19 @@ jobs:
     - name: Install Project Package
       run: pip install -e .
 
-    - name: Install tox and pysonar
-      run: pip install tox pysonar
+    - name: Run Tests
+      run: pytest
 
-    - name: Generate coverage report
-      run: tox -e py
-
-    - name: Get coverage
-      run: cat coverage.xml
-
-    - name: Run SonarQube Scan with pysonar
+    - name: SonarQube Scan
+      uses: SonarSource/sonarqube-scan-action@v5
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
-        SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
-      run: |
-        pysonar \
-          --sonar-host-url="$SONAR_HOST_URL" \
-          --sonar-token="$SONAR_TOKEN" \
-          --sonar-project-key="$SONAR_PROJECT_KEY" \
-          --sonar-organization="$SONAR_ORGANIZATION" \
-          -Dsonar.sources=src \
+      with:
+        args: >
+          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+          -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+          -Dsonar.sources=src
           -Dsonar.python.coverage.reportPaths=coverage.xml
 
     - name: Wait and Enforce Quality Gate
