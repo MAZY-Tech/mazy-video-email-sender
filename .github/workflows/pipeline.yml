@@ -31,11 +31,11 @@ jobs:
     - name: Install Project Package
       run: pip install -e .
 
-    - name: Run Tests
-      run: pytest -v
+    - name: Install tox and any other packages
+      run: pip install tox
 
     - name: Generate coverage report
-      run: coverage xml
+      run: tox -e py
 
     - name: Get coverage
       run: cat coverage.xml
