@@ -50,7 +50,7 @@ jobs:
         pysonar \
           --sonar-host-url="$SONAR_HOST_URL" \
           --sonar-token="$SONAR_TOKEN" \
-          --sonar-project-key"$SONAR_PROJECT_KEY" \
+          --sonar-project-key="$SONAR_PROJECT_KEY" \
           --sonar-organization="$SONAR_ORGANIZATION" \
           -Dsonar.sources=src \
           -Dsonar.python.coverage.reportPaths=coverage.xml
