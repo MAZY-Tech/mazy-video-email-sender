@@ -1,7 +1,5 @@
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
-# Supondo que o código original está no arquivo 'cognito_utils.py'
 from cognito_utils import get_user_info
 
 FAKE_USER_POOL_ID = "us-east-1_fake12345"
