@@ -1,6 +1,10 @@
-# mazy-video-tools-notification
+# MAZY Video Tools Notification
 
-Função **AWS Lambda** para envio de notificações por e-mail com links assinados do S3, acionada por eventos do SQS.
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=MAZY-Tech_mazy-video-tools-notification&metric=coverage)](https://sonarcloud.io/summary/new_code?id=MAZY-Tech_mazy-video-tools-notification)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=MAZY-Tech_mazy-video-tools-notification&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=MAZY-Tech_mazy-video-tools-notification)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MAZY-Tech_mazy-video-tools-notification&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=MAZY-Tech_mazy-video-tools-notification)
+
+Função **AWS Lambda** para envio de notificações por e-mail com link de resultado da extração das imagens, acionada por eventos do SQS.
 
 ## Sumário
 
@@ -25,7 +29,7 @@ O **mazy-video-tools-notification** é um microsserviço serverless em **Python 
 5. **E-mail Notification**: Envia e-mail via SMTP com o template Jinja2 (`base.html`), passando as variáveis:
    - `name`  
    - `status`  
-   - `download_url` (se COMPLETED)  
+   - `video_url` (se COMPLETED)  
    - `error_message` (se FAILED)  
 6. **Retentativa & Logging**: Em caso de falha, a mensagem permanece na fila para nova tentativa. Logs via CloudWatch.
 
@@ -38,7 +42,9 @@ O **mazy-video-tools-notification** é um microsserviço serverless em **Python 
 - **AWS SQS**  
 - **AWS S3**  
 - **AWS Cognito**  
-- **AWS SAM**  
+- **AWS SAM**
+- **Sentry**
+- **Sonar**
 
 ## Pré-requisitos
 
@@ -63,22 +69,21 @@ O **mazy-video-tools-notification** é um microsserviço serverless em **Python 
    ```
 
 3. Configure variáveis de ambiente (crie `.env` a partir de `.env.example`):  
-   ```dotenv
-   SMTP_SERVER=...
-   SMTP_PORT=587
-   SMTP_USER=...
-   SMTP_PASSWORD=...
-   EMAIL_FROM=...
-   TEMPLATE_DIR=./templates
-   SIGNED_URL_EXPIRATION=3600
-   COGNITO_USER_POOL_ID=...
+   ```
+   cp .env.example .env
    ```
 
-4. Simule um evento SQS em `local_testing.py` e execute:  
+4. Simule um evento com SAM CLI:
    ```bash
-   python local_testing.py
+   sam local invoke  NotificationFunction --event example.json
    ```
 
+## Teste Unitários
+
+1. Com os pacotes já instalados localmente, execute:
+   ```
+   pytest -v
+   ```
 ## Empacotamento e Deploy (SAM)
 
 1. **Build**:  
@@ -104,16 +109,34 @@ O template SAM está em `template.yaml` e inclui:
 
 No console AWS ou via SAM, defina as variáveis de ambiente:
 
-| Variable                 | Description                                    |
-|--------------------------|------------------------------------------------|
-| `SMTP_SERVER`            | SMTP server endpoint                           |
-| `SMTP_PORT`              | SMTP port (TLS)                                |
-| `SMTP_USER`              | SMTP username                                  |
-| `SMTP_PASSWORD`          | SMTP password (use Secrets Manager em prod)    |
-| `EMAIL_FROM`             | Endereço “From” nos e-mails                    |
-| `TEMPLATE_DIR`           | Caminho para templates Jinja2                  |
-| `SIGNED_URL_EXPIRATION`  | TTL do presigned URL (segundos)                |
-| `COGNITO_USER_POOL_ID`   | ID do Cognito User Pool                        |
+| Variável                | Descrição                                                                 |
+|------------------------|---------------------------------------------------------------------------|
+| `DATABASE_HOST`        | Endpoint do banco de dados.                                               |
+| `DATABASE_USER`        | Nome de usuário para o banco de dados.                                   |
+| `DATABASE_PASSWORD`    | Senha para o banco de dados.                                              |
+| `DATABASE_NAME`        | Nome do banco de dados (database/schema).                                 |
+| `SMTP_SERVER`          | Endpoint do servidor SMTP para envio de e-mails.                          |
+| `SMTP_PORT`            | Porta do servidor SMTP (ex: 587 para TLS).                                |
+| `SMTP_USER`            | Nome de usuário para autenticação no servidor SMTP.                       |
+| `SMTP_PASSWORD`        | Senha para o servidor SMTP (em produção, use um Secrets Manager).         |
+| `EMAIL_FROM`           | Endereço de e-mail que aparecerá como remetente ("From").                 |
+| `COGNITO_USER_POOL_ID` | O ID do User Pool do AWS Cognito.                                         |
+| `FRONTEND_VIDEO_URL`   | URL base do frontend para montar o link do vídeo no e-mail.               |
+| `SENTRY_DSN`           | DSN (Data Source Name) do projeto no Sentry para monitoramento de erros.  |
+| `TEMPLATE_DIR`         | (Opcional) Caminho para o diretório de templates Jinja2.                  |
 
 ---
-**MAZY Video Tools** © 2025
+
+## Participantes
+
+- **Alison Israel - RM358367**  
+  *Discord*: @taykarus | E-mail: taykarus@gmail.com
+
+- **José Matheus de Oliveira - RM358854**  
+  *Discord*: @jsmatheus | E-mail: matheusoliveira.info@gmail.com
+
+- **Victor Zaniquelli - RM358533**  
+  *Discord*: @zaniquelli | E-mail: zaniquelli@outlook.com.br
+
+- **Yan Gianini - RM358368**  
+  *Discord*: @.gianini | E-mail: yangianini@gmail.com

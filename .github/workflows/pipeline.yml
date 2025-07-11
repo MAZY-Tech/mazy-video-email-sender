@@ -17,6 +17,8 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Set up Python 3.12
       uses: actions/setup-python@v5
@@ -29,21 +31,19 @@ jobs:
     - name: Install Project Package
       run: pip install -e .
 
-    - name: Test and Generate coverage report
-      run: pytest --cov=src --cov-report=xml:coverage.xml
+    - name: Run Tests
+      run: pytest
 
     - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@v2
+      uses: SonarSource/sonarqube-scan-action@v5
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       with:
         args: >
           -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
-          -Dsonar.projectName=${{ vars.SONAR_PROJECT_NAME }}
           -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
           -Dsonar.sources=src
-          -Dsonar.tests=tests
           -Dsonar.python.coverage.reportPaths=coverage.xml
 
     - name: Wait and Enforce Quality Gate
