@@ -40,7 +40,13 @@ jobs:
     - name: Get coverage
       run: cat coverage.xml
 
-    - name: Run SonarQube Scan with pysonar
+    - name: Install SonarScanner
+      run: |
+        wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+        unzip sonar-scanner-cli-5.0.1.3006-linux.zip
+        echo "$(pwd)/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
+
+    - name: Run SonarQube Scan
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -48,17 +54,17 @@ jobs:
         SONAR_PROJECT_NAME: ${{ vars.SONAR_PROJECT_NAME }}
         SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
       run: |
-        pysonar \
-          --project-key "$SONAR_PROJECT_KEY" \
-          --project-name "$SONAR_PROJECT_NAME" \
-          --organization "$SONAR_ORGANIZATION" \
-          --sources src \
-          --tests tests \
-          --coverage-report coverage.xml \
-          --language python \
-          --python-version 3.12 \
-          --host-url "$SONAR_HOST_URL" \
-          --token "$SONAR_TOKEN"
+        sonar-scanner \
+          -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
+          -Dsonar.projectName="$SONAR_PROJECT_NAME" \
+          -Dsonar.organization="$SONAR_ORGANIZATION" \
+          -Dsonar.sources=src \
+          -Dsonar.tests=tests \
+          -Dsonar.python.coverage.reportPaths=coverage.xml \
+          -Dsonar.language=py \
+          -Dsonar.python.version=3.12 \
+          -Dsonar.host.url="$SONAR_HOST_URL" \
+          -Dsonar.token="$SONAR_TOKEN"
 
     - name: Wait and Enforce Quality Gate
       uses: sonarsource/sonarqube-quality-gate-action@master
