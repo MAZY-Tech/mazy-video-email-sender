@@ -31,8 +31,8 @@ jobs:
     - name: Install Project Package
       run: pip install -e .
 
-    - name: Install tox and any other packages
-      run: pip install tox
+    - name: Install tox and pysonar
+      run: pip install tox pysonar
 
     - name: Generate coverage report
       run: tox -e py
@@ -40,14 +40,25 @@ jobs:
     - name: Get coverage
       run: cat coverage.xml
 
-    - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@v3
+    - name: Run SonarQube Scan with pysonar
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      with:
-        args: >
-          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}  -Dsonar.projectName=${{ vars.SONAR_PROJECT_NAME }}  -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}  -Dsonar.sources=src -Dsonar.tests=tests  -Dsonar.python.version=3.12 -Dsonar.python.coverage.reportPaths=coverage.xml
+        SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+        SONAR_PROJECT_NAME: ${{ vars.SONAR_PROJECT_NAME }}
+        SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+      run: |
+        pysonar scan \
+          --project-key "$SONAR_PROJECT_KEY" \
+          --project-name "$SONAR_PROJECT_NAME" \
+          --organization "$SONAR_ORGANIZATION" \
+          --sources src \
+          --tests tests \
+          --coverage-report coverage.xml \
+          --language python \
+          --python-version 3.12 \
+          --host-url "$SONAR_HOST_URL" \
+          --token "$SONAR_TOKEN"
 
     - name: Wait and Enforce Quality Gate
       uses: sonarsource/sonarqube-quality-gate-action@master
